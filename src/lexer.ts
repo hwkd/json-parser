@@ -23,6 +23,13 @@ export function newLexer(input: string) {
     state.readPos++;
   }
 
+  function peekChar() {
+    if (state.readPos >= state.input.length) {
+      return null;
+    }
+    return state.input[state.readPos];
+  }
+
   function eatWhitespace() {
     while (
       state.ch === " " ||
@@ -44,8 +51,27 @@ export function newLexer(input: string) {
 
   function readNumber() {
     const pos = state.pos;
+    if (state.ch === "-") {
+      readChar();
+    }
     while (isDigit(state.ch)) {
       readChar();
+    }
+    if (state.ch === ".") {
+      readChar();
+      while (isDigit(state.ch)) {
+        readChar();
+      }
+    }
+    if (state.ch === "e" || state.ch === "E") {
+      readChar();
+      // @ts-ignore
+      if (state.ch === "+" || state.ch === "-") {
+        readChar();
+      }
+      while (isDigit(state.ch)) {
+        readChar();
+      }
     }
     return state.input.slice(pos, state.pos);
   }
@@ -80,6 +106,12 @@ export function newLexer(input: string) {
       case null:
         token = { type: tokenType.EOF, literal: "EOF" };
         break;
+      case "-":
+        if (isDigit(peekChar())) {
+          const literal = readNumber();
+          token = { type: tokenType.NUMBER, literal };
+          return token;
+        }
       default:
         if (isLetter(state.ch)) {
           const literal = readIdentifier();

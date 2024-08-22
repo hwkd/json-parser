@@ -148,4 +148,48 @@ describe("Lexer", () => {
       expect(token).toEqual(e);
     });
   });
+
+  test("nextToken [numbers]", () => {
+    const input = `{
+      "int": -42,
+      "float": 3.14,
+      "decimal": 0.123,
+      "scientific": 1.23e4
+    }`;
+    const lexer = newLexer(input);
+
+    const expected = [
+      { type: tokenType.LBRACE, literal: "{" },
+      { type: tokenType.QUOTE, literal: '"' },
+      { type: tokenType.IDENT, literal: "int" },
+      { type: tokenType.QUOTE, literal: '"' },
+      { type: tokenType.COLON, literal: ":" },
+      { type: tokenType.NUMBER, literal: "-42" },
+      { type: tokenType.COMMA, literal: "," },
+      { type: tokenType.QUOTE, literal: '"' },
+      { type: tokenType.IDENT, literal: "float" },
+      { type: tokenType.QUOTE, literal: '"' },
+      { type: tokenType.COLON, literal: ":" },
+      { type: tokenType.NUMBER, literal: "3.14" },
+      { type: tokenType.COMMA, literal: "," },
+      { type: tokenType.QUOTE, literal: '"' },
+      { type: tokenType.IDENT, literal: "decimal" },
+      { type: tokenType.QUOTE, literal: '"' },
+      { type: tokenType.COLON, literal: ":" },
+      { type: tokenType.NUMBER, literal: "0.123" },
+      { type: tokenType.COMMA, literal: "," },
+      { type: tokenType.QUOTE, literal: '"' },
+      { type: tokenType.IDENT, literal: "scientific" },
+      { type: tokenType.QUOTE, literal: '"' },
+      { type: tokenType.COLON, literal: ":" },
+      { type: tokenType.NUMBER, literal: "1.23e4" },
+      { type: tokenType.RBRACE, literal: "}" },
+      { type: tokenType.EOF, literal: "EOF" },
+    ];
+
+    expected.forEach((e) => {
+      const token = lexer.nextToken();
+      expect(token).toEqual(e);
+    });
+  });
 });
