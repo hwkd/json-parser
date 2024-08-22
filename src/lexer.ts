@@ -1,4 +1,4 @@
-import { tokenType } from "./token";
+import { Token, getTokenType, tokenType } from "./token";
 
 export function newLexer(input: string) {
   const state: {
@@ -23,8 +23,37 @@ export function newLexer(input: string) {
     state.readPos++;
   }
 
+  function eatWhitespace() {
+    while (
+      state.ch === " " ||
+      state.ch === "\t" ||
+      state.ch === "\n" ||
+      state.ch === "\r"
+    ) {
+      readChar();
+    }
+  }
+
+  function readIdentifier() {
+    const pos = state.pos;
+    while (isLetter(state.ch)) {
+      readChar();
+    }
+    return state.input.slice(pos, state.pos);
+  }
+
+  function readNumber() {
+    const pos = state.pos;
+    while (isDigit(state.ch)) {
+      readChar();
+    }
+    return state.input.slice(pos, state.pos);
+  }
+
   function nextToken() {
-    let token = { type: "", literal: "" };
+    let token: Token = { type: "", literal: "" };
+
+    eatWhitespace();
 
     switch (state.ch) {
       case "{":
@@ -51,6 +80,17 @@ export function newLexer(input: string) {
       case null:
         token = { type: tokenType.EOF, literal: "EOF" };
         break;
+      default:
+        if (isLetter(state.ch)) {
+          const literal = readIdentifier();
+          const type = getTokenType(literal);
+          token = { type, literal };
+          return token;
+        } else if (isDigit(state.ch)) {
+          const literal = readNumber();
+          token = { type: tokenType.NUMBER, literal };
+          return token;
+        }
     }
 
     readChar();
@@ -59,4 +99,18 @@ export function newLexer(input: string) {
 
   readChar();
   return { nextToken };
+}
+
+function isLetter(ch: string | null) {
+  if (ch === null) {
+    return false;
+  }
+  return (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z") || ch === "_";
+}
+
+function isDigit(ch: string | null) {
+  if (ch === null) {
+    return false;
+  }
+  return ch >= "0" && ch <= "9";
 }

@@ -18,5 +18,17 @@ export const tokenType = {
   TRUE: "TRUE",
   FALSE: "FALSE",
   EOF: "EOF",
+  IDENT: "IDENT",
+  NUMBER: "NUMBER",
 };
 
+const keywords: { [key: string]: TokenType } = {
+  null: tokenType.NULL,
+  undefined: tokenType.UNDEFINED,
+  true: tokenType.TRUE,
+  false: tokenType.FALSE,
+};
+
+export function getTokenType(literal: string): TokenType {
+  return keywords[literal] || tokenType.IDENT;
+}
