@@ -49,6 +49,14 @@ export function newLexer(input: string) {
     return state.input.slice(pos, state.pos);
   }
 
+  function readString() {
+    const pos = state.pos;
+    while (state.ch !== '"') {
+      readChar();
+    }
+    return state.input.slice(pos, state.pos);
+  }
+
   function readNumber() {
     const pos = state.pos;
     if (state.ch === "-") {
@@ -101,7 +109,9 @@ export function newLexer(input: string) {
         token = { type: tokenType.COLON, literal: state.ch };
         break;
       case '"':
-        token = { type: tokenType.QUOTE, literal: state.ch };
+        readChar();
+        const literal = readString();
+        token = { type: tokenType.STRING, literal };
         break;
       case null:
         token = { type: tokenType.EOF, literal: "EOF" };

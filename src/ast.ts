@@ -1,4 +1,6 @@
-export interface Node {}
+export interface Node {
+  type: string;
+}
 
 export interface ObjectNode extends Node {
   type: "Object";
@@ -16,17 +18,21 @@ export interface KeyValueNode extends Node {
   value: Node;
 }
 
-export interface NumberNode extends Node {
+export interface LiteralNode extends Node {
+  value: unknown;
+}
+
+export interface NumberNode extends LiteralNode {
   type: "Number";
   value: number;
 }
 
-export interface StringNode extends Node {
+export interface StringNode extends LiteralNode {
   type: "String";
   value: string;
 }
 
-export interface BooleanNode extends Node {
+export interface BooleanNode extends LiteralNode {
   type: "Boolean";
   value: boolean;
 }

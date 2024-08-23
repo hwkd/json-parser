@@ -99,7 +99,7 @@ export function newParser(input: string) {
         return parseObject();
       case tokenType.LSQUARE:
         return parseArray();
-      case tokenType.QUOTE:
+      case tokenType.STRING:
         return parseString();
       case tokenType.NUMBER:
         return parseNumber();
@@ -116,19 +116,8 @@ export function newParser(input: string) {
   }
 
   function parseString(): StringNode {
-    if (!consume(tokenType.QUOTE)) {
-      throw new Error("Expected QUOTE");
-    }
-
-    let value = "";
-    if (currentToken.type !== tokenType.QUOTE) {
-      value = currentToken.literal;
-      nextToken();
-    }
-
-    if (!consume(tokenType.QUOTE)) {
-      throw new Error("Expected QUOTE");
-    }
+    const value = currentToken.literal;
+    consume(tokenType.STRING);
 
     return {
       type: "String",

@@ -10,7 +10,6 @@ export const tokenType = {
   RBRACE: "RBRACE",
   LSQUARE: "LSQUARE",
   RSQUARE: "RSQUARE",
-  QUOTE: "QUOTE",
   COMMA: "COMMA",
   COLON: "COLON",
   NULL: "NULL",
@@ -20,6 +19,7 @@ export const tokenType = {
   EOF: "EOF",
   IDENT: "IDENT",
   NUMBER: "NUMBER",
+  STRING: "STRING",
 };
 
 const keywords: { [key: string]: TokenType } = {
