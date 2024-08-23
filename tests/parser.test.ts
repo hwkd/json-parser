@@ -18,6 +18,7 @@ describe("Parser", () => {
       "boo": false,
       "bam": null,
       "bom": undefined,
+      "hum": "",
     }`);
     const node = parser.parse();
     expect(node).toEqual({
@@ -62,6 +63,11 @@ describe("Parser", () => {
           type: "KeyValue",
           key: { type: "String", value: "bom" },
           value: { type: "Undefined" },
+        },
+        {
+          type: "KeyValue",
+          key: { type: "String", value: "hum" },
+          value: { type: "String", value: "" },
         },
       ],
     });

@@ -5,7 +5,7 @@
  * | keyValue = string ":" value ("," keyValue)?
  * | array = "[" value "]"
  * | string = '"' [^"]* '"'
- * | number = [0-9]+ | [0-9]+.[0-9]+ | [0-9]+e[0-9]+
+ * | number = [0-9]+(.[0-9]+)?(e-?[0-9]+(.[0-9]+)?)?
  * | boolean = "true" | "false"
  * | null = "null"
  * | undefined = "undefined"
@@ -120,8 +120,11 @@ export function newParser(input: string) {
       throw new Error("Expected QUOTE");
     }
 
-    const value = currentToken.literal;
-    nextToken();
+    let value = "";
+    if (currentToken.type !== tokenType.QUOTE) {
+      value = currentToken.literal;
+      nextToken();
+    }
 
     if (!consume(tokenType.QUOTE)) {
       throw new Error("Expected QUOTE");
