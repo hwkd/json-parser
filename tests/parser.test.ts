@@ -75,8 +75,8 @@ describe("Parser", () => {
             "hello": ["world", "universe"]
           },
           "faz": 42,
-          "qaz": "qux",
-        }
+          "qaz": "qux"
+        },
         "boo": true
       }
     }`);
@@ -107,7 +107,7 @@ describe("Parser", () => {
                             key: { type: "String", value: "hello" },
                             value: {
                               type: "Array",
-                              elements: [
+                              values: [
                                 { type: "String", value: "world" },
                                 { type: "String", value: "universe" },
                               ],

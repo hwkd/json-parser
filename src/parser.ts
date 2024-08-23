@@ -2,7 +2,7 @@
  * CFG in EBNF
  * | value = object | array | string | number | boolean | null | undefined
  * | object = "{" keyValue "}"
- * | keyValue = string ":" value | string ":" value "," keyValue
+ * | keyValue = string ":" value ("," keyValue)?
  * | array = "[" value "]"
  * | string = '"' [^"]* '"'
  * | number = [0-9]+ | [0-9]+.[0-9]+ | [0-9]+e[0-9]+
@@ -34,21 +34,142 @@ export function newParser(input: string) {
   }
 
   function parse(): Node {
-    nextToken();
     return parseValue();
   }
 
-  function parseObject(): ObjectNode {}
+  function parseObject(): ObjectNode {
+    const node: ObjectNode = {
+      type: "Object",
+      keyValues: [],
+    };
 
-  function parseArray(): ArrayNode {}
+    if (!consume(tokenType.LBRACE)) {
+      throw new Error("Expected LBRACE");
+    }
 
-  function parseKeyValue(): KeyValueNode {}
+    while (!consume(tokenType.RBRACE)) {
+      const keyValue = parseKeyValue();
+      node.keyValues.push(keyValue);
+      consume(tokenType.COMMA);
+    }
 
-  function parseValue(): Node {}
+    return node;
+  }
 
-  function parseString(): StringNode {}
+  function parseArray(): ArrayNode {
+    const node: ArrayNode = {
+      type: "Array",
+      values: [],
+    };
 
-  function parseNumber(): NumberNode {}
+    if (!consume(tokenType.LSQUARE)) {
+      throw new Error("Expected LBRACKET");
+    }
+
+    while (!consume(tokenType.RSQUARE)) {
+      const value = parseValue();
+      node.values.push(value);
+      if (consume(tokenType.COMMA) && currentToken.type === tokenType.RSQUARE) {
+        throw new Error("Unexpected COMMA before RSQUARE");
+      }
+    }
+
+    return node;
+  }
+
+  function parseKeyValue(): KeyValueNode {
+    const key = parseString();
+
+    if (!consume(tokenType.COLON)) {
+      throw new Error("Expected COLON");
+    }
+
+    const value = parseValue();
+
+    return {
+      type: "KeyValue",
+      key,
+      value,
+    };
+  }
+
+  function parseValue(): Node {
+    switch (currentToken.type) {
+      case tokenType.LBRACE:
+        return parseObject();
+      case tokenType.LSQUARE:
+        return parseArray();
+      case tokenType.QUOTE:
+        return parseString();
+      case tokenType.NUMBER:
+        return parseNumber();
+      case tokenType.TRUE:
+      case tokenType.FALSE:
+        return parseBoolean();
+      case tokenType.NULL:
+        return parseNull();
+      case tokenType.UNDEFINED:
+        return parseUndefined();
+      default:
+        throw new Error(`Unexpected token: ${currentToken.type}`);
+    }
+  }
+
+  function parseString(): StringNode {
+    if (!consume(tokenType.QUOTE)) {
+      throw new Error("Expected QUOTE");
+    }
+
+    const value = currentToken.literal;
+    nextToken();
+
+    if (!consume(tokenType.QUOTE)) {
+      throw new Error("Expected QUOTE");
+    }
+
+    return {
+      type: "String",
+      value,
+    };
+  }
+
+  function parseNumber(): NumberNode {
+    const value = parseFloat(currentToken.literal);
+    nextToken();
+    return {
+      type: "Number",
+      value,
+    };
+  }
+
+  function parseBoolean(): BooleanNode {
+    if (
+      currentToken.type !== tokenType.TRUE &&
+      currentToken.type !== tokenType.FALSE
+    ) {
+      throw new Error("Expected TRUE or FALSE");
+    }
+    const value = currentToken.type === tokenType.TRUE;
+    nextToken();
+    return {
+      type: "Boolean",
+      value,
+    };
+  }
+
+  function parseNull(): NullNode {
+    if (!consume(tokenType.NULL)) {
+      throw new Error("Expected NULL");
+    }
+    return { type: "Null" };
+  }
+
+  function parseUndefined(): UndefinedNode {
+    if (!consume(tokenType.UNDEFINED)) {
+      throw new Error("Expected UNDEFINED");
+    }
+    return { type: "Undefined" };
+  }
 
   function consume(tokenType: TokenType): boolean {
     if (currentToken.type === tokenType) {

@@ -7,7 +7,7 @@ export interface ObjectNode extends Node {
 
 export interface ArrayNode extends Node {
   type: "Array";
-  elements: Node[];
+  values: Node[];
 }
 
 export interface KeyValueNode extends Node {
