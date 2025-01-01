@@ -6,7 +6,7 @@ It checks for syntax errors and provides the most basic error feedback to the us
 
 ## Learning Outcomes
 
-The techniques applied to this parser can be used in other projects. For example, you can use the same techniques to parse other semi-structured formats like XML, HTML, or even programming languages like JavaScript, Python, etc. I've previously written a parser for a subset of a C programming language in Java and I applied essentially the same techniques. It's not only fun, but it's also a great way to learn how interpreters, compilers, and generally, how programming languages work.
+The techniques applied to this parser can be used in other projects. For example, you can use the same techniques to parse other semi-structured formats like XML, HTML, or even programming languages like JavaScript, Python, etc. I've previously written a parser for a subset of a C programming language in Java and I applied essentially the same techniques. It's not only fun, but it's also a great way to learn how interpreters or parsers work in general.
 
 ## Benchmarks
 
